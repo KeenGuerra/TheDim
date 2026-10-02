@@ -3,53 +3,132 @@ using UnityEngine.Rendering.Universal;
 
 public class PuntoSeguro : MonoBehaviour
 {
-    [Header("Visual")]
+    [Header("Sprites")]
     public Sprite spriteApagado;
     public Sprite spriteEncendido;
-    public Light2D luz;
-    public float intensidadLuz = 1f;
 
-    [Header("Dónde reaparece Alex (relativo al farol)")]
+    [Header("Luz")]
+    public Light2D luz;
+    public float intensidadLuz = 1.2f;
+
+    [Header("Encender")]
+    [Tooltip("Segundos que Alex debe quedarse quieto bajo el farol para encenderlo")]
+    public float tiempoParaEncender = 1f;
+    [Tooltip("Velocidad máxima para considerar que Alex está quieto")]
+    public float velocidadQuieto = 0.2f;
+
+    [Header("Reaparición")]
     public Vector2 offsetReaparicion = new Vector2(1.5f, 0.5f);
 
-    private SpriteRenderer sr;
-    private bool activo = false;
-
+    public bool encendido { get; private set; }
     public Vector3 PosicionReaparicion => transform.position + (Vector3)offsetReaparicion;
+
+    private SpriteRenderer sr;
+    private Rigidbody2D rbAlex;
+    private bool alexDentro = false;
+    private bool zonaSeguraActiva = false;
+    private float carga = 0f;
 
     void Start()
     {
         sr = GetComponent<SpriteRenderer>();
-        if (spriteApagado != null && sr != null) sr.sprite = spriteApagado;
+        if (sr != null && spriteApagado != null) sr.sprite = spriteApagado;
         if (luz != null) luz.intensity = 0f;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    void Update()
     {
-        if (!other.CompareTag("Player")) return;
+        if (encendido || !alexDentro || rbAlex == null) return;
 
-        CorruptionManager.instancia.RegistrarPuntoSeguro(this);
-        CorruptionManager.instancia.EntrarZonaSegura();   // bajo la luz, la corrupción se detiene
+        bool quieto = rbAlex.linearVelocity.magnitude < velocidadQuieto;
 
-        if (!activo)
+        if (quieto)
         {
-            activo = true;
-            if (spriteEncendido != null && sr != null) sr.sprite = spriteEncendido;
-            if (luz != null) luz.intensity = intensidadLuz;
-            Debug.Log("Punto seguro activado: " + name);
+            if (carga == 0f) AudioJuego.IniciarCargaFarol();     // SONIDO
+            carga += Time.deltaTime;
+        }
+        else
+        {
+            if (carga > 0f) AudioJuego.DetenerCargaFarol();      // SONIDO
+            carga = 0f;
+        }
+
+        float k = Mathf.Clamp01(carga / tiempoParaEncender);
+
+        if (luz != null)
+        {
+            float parpadeo = (k > 0f && Random.value < 0.35f) ? 0.3f : 1f;
+            luz.intensity = intensidadLuz * k * 0.7f * parpadeo;
+        }
+        if (sr != null && spriteEncendido != null && spriteApagado != null)
+            sr.sprite = (k > 0f && Random.value < k) ? spriteEncendido : spriteApagado;
+
+        if (carga >= tiempoParaEncender) Encender();
+    }
+
+    void Encender()
+    {
+        encendido = true;
+        AudioJuego.DetenerCargaFarol();                           // SONIDO
+        AudioJuego.Sonar("farol");                                // SONIDO
+
+        if (sr != null && spriteEncendido != null) sr.sprite = spriteEncendido;
+        if (luz != null) luz.intensity = intensidadLuz;
+
+        if (CorruptionManager.instancia != null)
+            CorruptionManager.instancia.RegistrarPuntoSeguro(this);
+
+        ActivarZonaSegura();
+        Debug.Log("Punto seguro activado: " + name);
+    }
+
+    void ActivarZonaSegura()
+    {
+        if (zonaSeguraActiva || CorruptionManager.instancia == null) return;
+        zonaSeguraActiva = true;
+        CorruptionManager.instancia.EntrarZonaSegura();
+    }
+
+    void OnTriggerEnter2D(Collider2D otro)
+    {
+        MovimientoAlex mov = otro.GetComponent<MovimientoAlex>();
+        if (mov == null) return;
+
+        alexDentro = true;
+        rbAlex = mov.GetComponent<Rigidbody2D>();
+        carga = 0f;
+
+        if (encendido)
+        {
+            CorruptionManager.instancia?.RegistrarPuntoSeguro(this);
+            ActivarZonaSegura();
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    void OnTriggerExit2D(Collider2D otro)
     {
-        if (!other.CompareTag("Player")) return;
-        CorruptionManager.instancia.SalirZonaSegura();
+        if (otro.GetComponent<MovimientoAlex>() == null) return;
+
+        alexDentro = false;
+        carga = 0f;
+
+        if (!encendido)
+        {
+            AudioJuego.DetenerCargaFarol();                       // SONIDO
+            if (luz != null) luz.intensity = 0f;
+            if (sr != null && spriteApagado != null) sr.sprite = spriteApagado;
+        }
+
+        if (zonaSeguraActiva && CorruptionManager.instancia != null)
+        {
+            zonaSeguraActiva = false;
+            CorruptionManager.instancia.SalirZonaSegura();
+        }
     }
 
-    // En la Scene: celeste = dónde reaparece Alex
     void OnDrawGizmos()
     {
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(transform.position + (Vector3)offsetReaparicion, 0.3f);
+        Gizmos.DrawWireSphere(PosicionReaparicion, 0.3f);
     }
 }

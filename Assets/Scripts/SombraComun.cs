@@ -1,144 +1,168 @@
 using System.Collections;
 using UnityEngine;
+using TMPro;
 
 public class SombraComun : MonoBehaviour
 {
-    [Header("Movimiento (flota y deambula)")]
-    public float distanciaPatrulla = 2f;
-    public float velocidad = 0.8f;
-    public float alturaFlote = 0.2f;
-    public float velocidadFlote = 1.5f;
+    [Header("Patrulla")]
+    public float velocidad = 1.5f;
+    public float distanciaPatrulla = 3f;
+    public float alturaFlotar = 0.25f;
+    public float velocidadFlotar = 2f;
 
-    [Header("Contacto con Alex")]
-    public float subidaCorrupcion = 10f;
-    public float esperaEntreContactos = 1.5f;
+    [Header("Calmar con F estando cerca (0 = solo con el haz de luz)")]
+    public float distanciaCalmar = 0f;
+    public float corrupcionQueBaja = 10f;
 
-    [Header("Calmar con LIGHT (tecla F)")]
-    public float distanciaParaCalmar = 3f;
-    public float bajaCorrupcion = 10f;
-    public float duracionDisolver = 1.2f;
+    [Header("Contacto: la corrupción sube más rápido mientras te toca")]
+    public float corrupcionPorSegundo = 8f;
+    public float aceleracion = 3f;
+
+    [Header("Efectos")]
     public ParticleSystem chispas;
+    public Color colorCalmada = new Color(0.95f, 0.65f, 0.25f, 1f);
+    public float duracionCalma = 1.2f;
 
-    [Header("Letra que suelta al calmarse (opcional)")]
+    [Header("Letra atrapada (opcional)")]
     public GameObject prefabLetra;
-    public char letraAtrapada = 'L';
+    public char letraAtrapada = ' ';
 
-    private SpriteRenderer sr;
-    private Collider2D col;
     private Transform alex;
-    private Vector3 posicionInicial;
-    private float xAnterior;
-    private float ultimoContacto = -99f;
+    private AlexEstado estadoAlex;
+    private SpriteRenderer sr;
+    private Vector3 inicio;
     private bool calmada = false;
-
-    // Color cálido al que cambia cuando se calma
-    private readonly Color ambar = new Color(0.95f, 0.65f, 0.25f, 1f);
+    private bool tocandoAlex = false;
+    private float intensidadContacto = 0f;
 
     void Start()
     {
-        sr = GetComponent<SpriteRenderer>();
-        col = GetComponent<Collider2D>();
-        posicionInicial = transform.position;
+        inicio = transform.position;
+        sr = GetComponentInChildren<SpriteRenderer>();
 
-        GameObject jugador = GameObject.FindWithTag("Player");
-        if (jugador != null) alex = jugador.transform;
+        MovimientoAlex mov = FindFirstObjectByType<MovimientoAlex>();
+        if (mov != null)
+        {
+            alex = mov.transform;
+            estadoAlex = mov.GetComponent<AlexEstado>();
+        }
     }
 
     void Update()
     {
         if (calmada) return;
 
-        // Deambular de lado a lado mientras flota
-        float x = Mathf.PingPong(Time.time * velocidad, distanciaPatrulla * 2f) - distanciaPatrulla;
-        float y = Mathf.Sin(Time.time * velocidadFlote) * alturaFlote;
-        transform.position = posicionInicial + new Vector3(x, y, 0f);
+        Patrullar();
+        ActualizarContacto();
 
-        // Mirar hacia donde se mueve
-        if (x > xAnterior) sr.flipX = false;
-        else if (x < xAnterior) sr.flipX = true;
-        xAnterior = x;
-
-        // Calmarla con LIGHT si Alex está cerca
-        if (alex != null && Input.GetKeyDown(KeyCode.F) &&
-            Vector2.Distance(alex.position, transform.position) <= distanciaParaCalmar)
+        if (distanciaCalmar > 0f && Input.GetKeyDown(KeyCode.F) && alex != null)
         {
-            IntentarCalmar();
+            if (Vector2.Distance(alex.position, transform.position) <= distanciaCalmar &&
+                WordManager.instancia != null && WordManager.instancia.PalabraAprendida("LIGHT"))
+                Calmar();
         }
     }
 
-    void IntentarCalmar()
+    void Patrullar()
     {
-        if (!WordManager.instancia.PalabraAprendida("LIGHT"))
-        {
-            Debug.Log("La sombra se acerca, pero todavía no conoces LIGHT.");
-            return;
-        }
+        float x = inicio.x + Mathf.Sin(Time.time * velocidad / Mathf.Max(0.1f, distanciaPatrulla)) * distanciaPatrulla;
+        float y = inicio.y + Mathf.Sin(Time.time * velocidadFlotar) * alturaFlotar;
 
-        // Según el GDD, con las sombras comunes LIGHT tiene cooldown reducido: aquí no se bloquea
-        CorruptionManager.instancia.BajarCorrupcion(bajaCorrupcion);
-        Calmar();
+        if (sr != null) sr.flipX = x < transform.position.x;
+        transform.position = new Vector3(x, y, inicio.z);
     }
 
-    // Público por si otro script quiere calmarla
+    void ActualizarContacto()
+    {
+        bool escondido = estadoAlex != null && estadoAlex.escondido;
+        float objetivo = (tocandoAlex && !escondido) ? 1f : 0f;
+
+        intensidadContacto = Mathf.MoveTowards(intensidadContacto, objetivo, Time.deltaTime * aceleracion);
+        AudioJuego.ContactoSombra(intensidadContacto);            // SONIDO
+
+        if (intensidadContacto > 0f && CorruptionManager.instancia != null && CorruptionManager.instancia.enabled)
+            CorruptionManager.instancia.SubirCorrupcion(corrupcionPorSegundo * intensidadContacto * Time.deltaTime);
+    }
+
     public void Calmar()
     {
         if (calmada) return;
+        calmada = true;
+        tocandoAlex = false;
+
+        if (CorruptionManager.instancia != null)
+            CorruptionManager.instancia.BajarCorrupcion(corrupcionQueBaja);
+        AudioJuego.Sonar("sombra_calmar");                        // SONIDO
+
+        foreach (Collider2D c in GetComponentsInChildren<Collider2D>()) c.enabled = false;
         StartCoroutine(Disolver());
     }
 
     IEnumerator Disolver()
     {
-        calmada = true;
-        if (col != null) col.enabled = false;
         if (chispas != null) chispas.Play();
 
-        Color inicial = sr.color;
+        Color colorInicial = sr != null ? sr.color : Color.white;
+        Vector3 posInicial = transform.position;
         Vector3 escalaInicial = transform.localScale;
-        float t = 0f;
 
-        // Se entibia (de oscuro a ámbar), sube un poco y se desvanece
-        while (t < duracionDisolver)
+        float t = 0f;
+        while (t < duracionCalma)
         {
             t += Time.deltaTime;
-            float k = Mathf.Clamp01(t / duracionDisolver);
+            float k = t / duracionCalma;
 
-            Color c = Color.Lerp(inicial, ambar, k);
-            c.a = inicial.a * (1f - k);
-            sr.color = c;
-
-            transform.position += Vector3.up * (0.4f * Time.deltaTime);
-            transform.localScale = escalaInicial * (1f - 0.3f * k);
+            if (sr != null)
+            {
+                Color c = Color.Lerp(colorInicial, colorCalmada, Mathf.Clamp01(k * 2f));
+                c.a = 1f - Mathf.Clamp01((k - 0.5f) * 2f);
+                sr.color = c;
+            }
+            transform.position = posInicial + Vector3.up * k * 1.5f;
+            transform.localScale = escalaInicial * (1f + k * 0.3f);
             yield return null;
         }
 
-        // Suelta la letra que tenía atrapada
-        if (prefabLetra != null)
+        SoltarLetra(posInicial);
+
+        if (chispas != null && chispas.transform.IsChildOf(transform))
         {
-            GameObject nueva = Instantiate(prefabLetra, transform.position, Quaternion.identity);
-            Letra l = nueva.GetComponent<Letra>();
-            if (l != null) l.letra = letraAtrapada;
+            chispas.transform.SetParent(null);
+            Destroy(chispas.gameObject, 2f);
         }
-
-        Debug.Log("La sombra se calmó y se disolvió.");
-
-        // Espera a que terminen las chispas y desaparece
-        yield return new WaitForSeconds(1.5f);
         Destroy(gameObject);
     }
 
-    private void OnTriggerStay2D(Collider2D other)
+    void SoltarLetra(Vector3 posicion)
     {
-        if (calmada || !other.CompareTag("Player")) return;
+        if (prefabLetra == null || letraAtrapada == ' ') return;
 
-        // Si Alex está escondido (HIDE), la sombra no lo nota
-        AlexEstado estado = other.GetComponent<AlexEstado>();
-        if (estado != null && estado.escondido) return;
+        GameObject obj = Instantiate(prefabLetra, posicion, Quaternion.identity);
+        Letra l = obj.GetComponent<Letra>();
+        if (l != null) l.letra = letraAtrapada;
+        TextMeshPro texto = obj.GetComponentInChildren<TextMeshPro>();
+        if (texto != null) texto.text = letraAtrapada.ToString();
+    }
 
-        if (Time.time - ultimoContacto >= esperaEntreContactos)
+    void OnTriggerEnter2D(Collider2D otro)
+    {
+        if (otro.GetComponent<MovimientoAlex>() != null) tocandoAlex = true;
+    }
+
+    void OnTriggerExit2D(Collider2D otro)
+    {
+        if (otro.GetComponent<MovimientoAlex>() != null) tocandoAlex = false;
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (distanciaCalmar > 0f)
         {
-            ultimoContacto = Time.time;
-            CorruptionManager.instancia.SubirCorrupcion(subidaCorrupcion);
-            Debug.Log("¡Contacto con sombra! Corrupción sube.");
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, distanciaCalmar);
         }
+        Vector3 c = Application.isPlaying ? inicio : transform.position;
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawLine(c + Vector3.left * distanciaPatrulla, c + Vector3.right * distanciaPatrulla);
     }
 }
