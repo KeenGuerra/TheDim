@@ -13969,6 +13969,11 @@ MonoBehaviour:
   farol: {fileID: 8300000, guid: 2d703021290d3dc428e39036aafacea4, type: 3}
   salto: {fileID: 8300000, guid: ed1848bdfb8012c42a6e10ce001021d3, type: 3}
   dobleSalto: {fileID: 8300000, guid: 8e5568f750b5f5a449af36d04e44bd36, type: 3}
+  run: {fileID: 8300000, guid: cd7ee5612b319c14ba6337668593ed11, type: 3}
+  tabla: {fileID: 0}
+  caida: {fileID: 0}
+  hide: {fileID: 0}
+  alerta: {fileID: 0}
   sombraContacto: {fileID: 8300000, guid: 8446fadd5a0f224458ba14b6af76959f, type: 3}
   volumenContacto: 0.6
 --- !u!4 &511568607
@@ -31033,8 +31038,8 @@ Transform:
   m_GameObject: {fileID: 1028323906}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -68.5936, y: -36.4303, z: 0}
-  m_LocalScale: {x: 6.638804, y: 10.1114855, z: 1}
+  m_LocalPosition: {x: -68.5936, y: -28.4415, z: 0}
+  m_LocalScale: {x: 6.638804, y: 15.02769, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1620223924}
@@ -32609,6 +32614,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WordManager
   letrasRecolectadas: 
   palabrasAprendidas: []
+  cargarPalabrasGuardadas: 0
 --- !u!4 &1264947431
 Transform:
   m_ObjectHideFlags: 0
@@ -33025,8 +33031,8 @@ Transform:
   m_GameObject: {fileID: 1338023582}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 206.9457, y: -36.647, z: 0}
-  m_LocalScale: {x: 7.0661635, y: 10.073339, z: 1}
+  m_LocalPosition: {x: 206.9457, y: -29.1147, z: 0}
+  m_LocalScale: {x: 7.0661635, y: 14.708841, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -44539,8 +44545,8 @@ Transform:
   m_GameObject: {fileID: 1586148565}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 67.014, y: -36.647, z: 0}
-  m_LocalScale: {x: 6.486887, y: 10.073339, z: 1}
+  m_LocalPosition: {x: 67.014, y: -28.8864, z: 0}
+  m_LocalScale: {x: 6.486887, y: 14.84911, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -44760,6 +44766,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   margenSinSuelo: 0.1
+  multiplicadorVelocidad: 1
+  multiplicadorSalto: 1
   efectoSegundoSalto: {fileID: 0}
 --- !u!114 &1616365751
 MonoBehaviour:
@@ -44773,9 +44781,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c285bba3c110f8d49b6fac75ecf3c594, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AlexEstado
-  escondido: 0
+  palabra: HIDE
+  tecla: 104
   duracionHide: 3
   transparenciaOculto: 0.4
+  tinteOculto: {r: 0.7, g: 0.6, b: 1, a: 1}
+  multiplicadorVelocidad: 0.85
+  cooldown: 5
 --- !u!95 &1616365753
 Animator:
   serializedVersion: 7
@@ -62326,7 +62338,7 @@ MonoBehaviour:
   textoFrase: "La bicicleta de Sam... \xC9l estuvo aqu\xED."
   velocidadEscritura: 0.05
   duracionFundido: 1.2
-  escenaSiguiente: 
+  escenaSiguiente: Nivel 2
   numeroNivel: 1
 --- !u!1001 &1964931459
 PrefabInstance:
@@ -64405,15 +64417,15 @@ PrefabInstance:
       objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     - target: {fileID: 6864576650370965256, guid: 59d34368ea4fff645b60cdca3412dab6, type: 3}
       propertyPath: m_Color.b
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6864576650370965256, guid: 59d34368ea4fff645b60cdca3412dab6, type: 3}
       propertyPath: m_Color.g
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6864576650370965256, guid: 59d34368ea4fff645b60cdca3412dab6, type: 3}
       propertyPath: m_Color.r
-      value: 1
+      value: 0.9924528
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

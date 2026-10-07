@@ -1,2 +1,30 @@
 fileFormatVersion: 2
 guid: b9d399cfdec449b458d8cd4fec85df2a
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - musica: {fileID: 8300000, guid: b35ae45579e9eea4d8748f80fbb075fa, type: 3}
+  - musicaCorrupta: {fileID: 8300000, guid: 7048b47c40808054096ac047f4659135, type: 3}
+  - letra: {instanceID: 0}
+  - letrero: {instanceID: 0}
+  - linterna: {instanceID: 0}
+  - haz: {instanceID: 0}
+  - zona: {fileID: 8300000, guid: 633375983402dcd47899dab9bb7fa953, type: 3}
+  - sombraCalmar: {instanceID: 0}
+  - farolCarga: {instanceID: 0}
+  - farol: {instanceID: 0}
+  - salto: {fileID: 8300000, guid: ed1848bdfb8012c42a6e10ce001021d3, type: 3}
+  - dobleSalto: {fileID: 8300000, guid: 8e5568f750b5f5a449af36d04e44bd36, type: 3}
+  - run: {fileID: 8300000, guid: cd7ee5612b319c14ba6337668593ed11, type: 3}
+  - tabla: {fileID: 8300000, guid: fa95ba7d16ade4a4bbc14248e12439f8, type: 3}
+  - caida: {fileID: 8300000, guid: 705f18f346a7ae04caf8363c21e74bc7, type: 3}
+  - hide: {fileID: 8300000, guid: 2eaa86be1e33dbc4f80b5006a7f1070c, type: 3}
+  - alerta: {fileID: 8300000, guid: a794fda2ab59a0942b3fa9739fcd6097, type: 3}
+  - estatica: {fileID: 8300000, guid: 952045174f919f04489b404822d95e8b, type: 3}
+  - sombraContacto: {fileID: 8300000, guid: 8446fadd5a0f224458ba14b6af76959f, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

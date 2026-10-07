@@ -35,10 +35,28 @@ public class Tablero : MonoBehaviour
 
     void Start()
     {
+        BuscarCasillas();
         sr = GetComponent<SpriteRenderer>();
         if (spriteApagado != null) sr.sprite = spriteApagado;
         if (luz != null) luz.intensity = 0f;
         if (avisoTecla != null) avisoTecla.SetActive(false);
+    }
+
+    // Si la lista de casillas está vacía o incompleta, busca sola los textos hijos
+    // llamados "Casilla..." que estén activos, ordenados de izquierda a derecha.
+    void BuscarCasillas()
+    {
+        bool faltan = casillas == null || casillas.Length < palabraObjetivo.Length;
+        if (!faltan)
+            foreach (TextMeshPro t in casillas) if (t == null) { faltan = true; break; }
+        if (!faltan) return;
+
+        List<TextMeshPro> encontradas = new List<TextMeshPro>();
+        foreach (TextMeshPro t in GetComponentsInChildren<TextMeshPro>(false))
+            if (t.name.StartsWith("Casilla")) encontradas.Add(t);
+        encontradas.Sort((a, b) => a.transform.position.x.CompareTo(b.transform.position.x));
+        casillas = encontradas.ToArray();
+        Debug.Log(name + ": casillas encontradas automáticamente = " + casillas.Length);
     }
 
     void Update()
@@ -82,6 +100,7 @@ public class Tablero : MonoBehaviour
         formada = true;
         WordManager.instancia.FormarPalabra(palabraObjetivo);
         CorruptionManager.instancia.BajarCorrupcion(bajaCorrupcion);
+        AudioJuego.Sonar("letrero");                              // SONIDO
 
         // Parpadeo como un letrero viejo que vuelve a la vida
         float[] pausas = { 0.08f, 0.12f, 0.06f, 0.2f, 0.1f };

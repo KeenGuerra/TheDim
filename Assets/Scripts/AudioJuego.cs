@@ -28,6 +28,12 @@ public class AudioJuego : MonoBehaviour
     public AudioClip farol;
     public AudioClip salto;
     public AudioClip dobleSalto;
+    public AudioClip run;
+    public AudioClip tabla;
+    public AudioClip caida;
+    public AudioClip hide;
+    public AudioClip alerta;
+    public AudioClip estatica;
 
     [Header("Sonido continuo al tocar una sombra")]
     public AudioClip sombraContacto;
@@ -153,6 +159,12 @@ public class AudioJuego : MonoBehaviour
             case "farol": return farol;
             case "salto": return salto;
             case "doble_salto": return dobleSalto;
+            case "run": return run;
+            case "tabla": return tabla;
+            case "caida": return caida;
+            case "hide": return hide;
+            case "alerta": return alerta;
+            case "estatica": return estatica;
         }
         Debug.LogWarning("AudioJuego: no hay sonido llamado " + nombre);
         return null;

@@ -68,6 +68,7 @@ public class ZonaOscura : MonoBehaviour
 
         CorruptionManager.instancia.IniciarCooldownLight();
         CorruptionManager.instancia.BajarCorrupcion(bajaCorrupcion);
+        AudioJuego.Sonar("zona");                                 // SONIDO
         StartCoroutine(Disolver());
     }
 

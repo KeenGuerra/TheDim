@@ -19,6 +19,10 @@ public class MovimientoAlex : MonoBehaviour
     [Tooltip("Tiempo de tolerancia al dejar el suelo (evita parpadeos y permite saltar justo al borde)")]
     public float margenSinSuelo = 0.15f;
 
+    [Header("Modificadores (los usa HabilidadRun)")]
+    [HideInInspector] public float multiplicadorVelocidad = 1f;
+    [HideInInspector] public float multiplicadorSalto = 1f;
+
     [Header("Efecto opcional del segundo salto")]
     public ParticleSystem efectoSegundoSalto;
 
@@ -44,7 +48,7 @@ public class MovimientoAlex : MonoBehaviour
     {
         // --- Movimiento horizontal ---
         movimiento = Input.GetAxisRaw("Horizontal");
-        rb.linearVelocity = new Vector2(movimiento * velocidad, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(movimiento * velocidad * multiplicadorVelocidad, rb.linearVelocity.y);
 
         if (movimiento > 0) sr.flipX = false;
         else if (movimiento < 0) sr.flipX = true;
@@ -89,10 +93,13 @@ public class MovimientoAlex : MonoBehaviour
         CambiarAnimacion();
     }
 
+    // Hacia dónde mira Alex (lo usan otros scripts)
+    public bool MirandoIzquierda() { return sr != null && sr.flipX; }
+
     void Saltar(float fuerza)
     {
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
-        rb.AddForce(Vector2.up * fuerza, ForceMode2D.Impulse);
+        rb.AddForce(Vector2.up * fuerza * multiplicadorSalto, ForceMode2D.Impulse);
     }
 
     bool PresionoSaltar()

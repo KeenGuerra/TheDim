@@ -64,6 +64,7 @@ public class Letra : MonoBehaviour
 
         recogida = true;
         WordManager.instancia.RecolectarLetra(char.ToUpper(letra));
+        AudioJuego.Sonar("letra");                                // SONIDO
         StartCoroutine(Recoger());
     }
 
