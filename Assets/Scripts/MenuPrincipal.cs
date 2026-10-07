@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 // Menú principal: botón JUGAR y botón SALIR.
 // Va en un objeto vacío llamado "MenuPrincipal" en la escena del menú.
-// También funciona con teclado: Enter = Jugar, Esc = Salir.
+// También funciona con teclado: Enter = Jugar.
 public class MenuPrincipal : MonoBehaviour
 {
     [Tooltip("Nombre EXACTO de la primera escena del juego (como aparece en la carpeta Scenes)")]
@@ -26,7 +26,6 @@ public class MenuPrincipal : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) Jugar();
-        if (Input.GetKeyDown(KeyCode.Escape)) Salir();
     }
 
     // Conectar al botón JUGAR (On Click)

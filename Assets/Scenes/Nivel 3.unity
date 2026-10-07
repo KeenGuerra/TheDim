@@ -9270,6 +9270,7 @@ MonoBehaviour:
   caida: {fileID: 0}
   hide: {fileID: 8300000, guid: 2eaa86be1e33dbc4f80b5006a7f1070c, type: 3}
   alerta: {fileID: 0}
+  estatica: {fileID: 0}
   sombraContacto: {fileID: 8300000, guid: 8446fadd5a0f224458ba14b6af76959f, type: 3}
   volumenContacto: 0.6
 --- !u!4 &511568607
@@ -9395,7 +9396,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5.625
+  orthographic size: 11.25
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -9440,8 +9441,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.PixelPerfectCamera
   m_ComponentVersion: 1
   m_AssetsPPU: 16
-  m_RefResolutionX: 320
-  m_RefResolutionY: 180
+  m_RefResolutionX: 640
+  m_RefResolutionY: 320
   m_CropFrame: 0
   m_GridSnapping: 1
   m_FilterMode: 0
@@ -23122,12 +23123,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ef7bf2c88de0434bbd5897cf1105194, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FondoTorre
-  izquierda: -3
-  derecha: 44
-  abajo: -3
-  arriba: 53
-  camara: {fileID: 0}
-  sr: {fileID: 0}
 --- !u!1 &1039020297
 GameObject:
   m_ObjectHideFlags: 0
