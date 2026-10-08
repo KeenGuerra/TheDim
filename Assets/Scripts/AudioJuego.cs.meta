@@ -6,14 +6,14 @@ MonoImporter:
   defaultReferences:
   - musica: {fileID: 8300000, guid: b35ae45579e9eea4d8748f80fbb075fa, type: 3}
   - musicaCorrupta: {fileID: 8300000, guid: 7048b47c40808054096ac047f4659135, type: 3}
-  - letra: {instanceID: 0}
-  - letrero: {instanceID: 0}
-  - linterna: {instanceID: 0}
-  - haz: {instanceID: 0}
+  - letra: {fileID: 8300000, guid: 7ecd4c595a727ee46a1639609814dbfa, type: 3}
+  - letrero: {fileID: 8300000, guid: d661cdddef435c24889ac42f50553c9d, type: 3}
+  - linterna: {fileID: 8300000, guid: 82d75c6e25837a14bb95e99abdffb613, type: 3}
+  - haz: {fileID: 8300000, guid: f6918e5fa99b8a4458b2a5d5510347ae, type: 3}
   - zona: {fileID: 8300000, guid: 633375983402dcd47899dab9bb7fa953, type: 3}
-  - sombraCalmar: {instanceID: 0}
-  - farolCarga: {instanceID: 0}
-  - farol: {instanceID: 0}
+  - sombraCalmar: {fileID: 8300000, guid: fd781cf9c70c24845b80c2f635e8f0e4, type: 3}
+  - farolCarga: {fileID: 8300000, guid: df6bd17bdd0347646b50d45fa047e4b3, type: 3}
+  - farol: {fileID: 8300000, guid: 2d703021290d3dc428e39036aafacea4, type: 3}
   - salto: {fileID: 8300000, guid: ed1848bdfb8012c42a6e10ce001021d3, type: 3}
   - dobleSalto: {fileID: 8300000, guid: 8e5568f750b5f5a449af36d04e44bd36, type: 3}
   - run: {fileID: 8300000, guid: cd7ee5612b319c14ba6337668593ed11, type: 3}
